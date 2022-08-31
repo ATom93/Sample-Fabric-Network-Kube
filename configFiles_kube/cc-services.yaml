@@ -1,0 +1,27 @@
+apiVersion: v1
+items:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: org2-peer1-basic
+    spec:
+      selector:
+        run: org2-peer1-basic
+      ports:
+        - protocol: TCP
+          port: 30751
+          targetPort: 30751     
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: org1-peer1-basic
+    spec:
+      selector:
+        run: org1-peer1-basic
+      ports:
+        - protocol: TCP
+          port: 30751
+          targetPort: 30751   
+kind: List
+metadata: {}
+

@@ -1,0 +1,1 @@
+docker build -t chaincode/basic ./chaincode_client/chaincode-java

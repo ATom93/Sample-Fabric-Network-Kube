@@ -1,0 +1,760 @@
+apiVersion: v1
+items:
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: cli-org1
+      name: cli-org1
+    spec:
+      type: NodePort
+      ports:
+        - name: "30770"
+          port: 30770
+          targetPort: 30770
+          nodePort: 30770
+      selector:
+        io.kompose.service: cli-org1
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: cli-org2
+      name: cli-org2
+    spec:
+      type: NodePort
+      ports:
+        - name: "30780"
+          port: 30780
+          targetPort: 30780
+          nodePort: 30780
+      selector:
+        io.kompose.service: cli-org2
+    status:
+      loadBalancer: {}
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: orderer1-org0-com
+      name: orderer1-org0-com
+    spec:
+      type: NodePort
+      ports:
+        - name: "30750"
+          port: 30750
+          targetPort: 30750
+          nodePort: 30750
+      selector:
+        io.kompose.service: orderer1-org0-com
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: orderer2-org0-com
+      name: orderer2-org0-com
+    spec:
+      type: NodePort
+      ports:
+        - name: "30760"
+          port: 30760
+          targetPort: 30760
+          nodePort: 30760
+      selector:
+        io.kompose.service: orderer2-org0-com
+    status:
+      loadBalancer: {}
+      
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: peer1-org1-com
+      name: peer1-org1-com
+    spec:
+      type: NodePort
+      ports:
+        - name: "30751"
+          port: 30751
+          targetPort: 30751
+          nodePort: 30751
+        - name: "30752"
+          port: 30752
+          targetPort: 30752
+          nodePort: 30752
+      selector:
+        io.kompose.service: peer1-org1-com
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: peer1-org2-com
+      name: peer1-org2-com
+    spec:
+      type: NodePort
+      ports:
+        - name: "30756"
+          port: 30756
+          targetPort: 30756
+          nodePort: 30756
+        - name: "30757"
+          port: 30757
+          targetPort: 30757
+          nodePort: 30757
+      selector:
+        io.kompose.service: peer1-org2-com
+    status:
+      loadBalancer: {}
+
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      creationTimestamp: null
+      name: dockercompose-fabric
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  io.kompose.network/dockercompose-fabric: "true"
+      podSelector:
+        matchLabels:
+          io.kompose.network/dockercompose-fabric: "true"
+
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: cli-org1
+      name: cli-org1
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: cli-org1
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+            kompose.version: 1.26.0 (40646f47)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/dockercompose-fabric: "true"
+            io.kompose.service: cli-org1
+        spec:
+          containers:
+            - args:
+                - /bin/bash
+              env:
+                - name: CORE_PEER_ADDRESS
+                  value: peer1-org1-com:30751
+                - name: CORE_PEER_ID
+                  value: cli_org1
+                - name: CORE_PEER_LOCALMSPID
+                  value: org1
+                - name: CORE_PEER_MSPCONFIGPATH
+                  value: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/org1/peer1/msp/user/admin
+                - name: CORE_PEER_TLS_CERT_FILE
+                  value: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/org1/peer1/tls/signcerts/cert.pem
+                - name: CORE_PEER_TLS_CLIENTAUTHREQUIRED
+                  value: "false"
+                - name: CORE_PEER_TLS_ENABLED
+                  value: "true"
+                - name: CORE_PEER_TLS_KEY_FILE
+                  value: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/org1/peer1/tls/keystore/server.key
+                - name: CORE_PEER_TLS_ROOTCERT_FILE
+                  value: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/org1/peer1/tls/cacerts/cacert-30854.pem
+                - name: CORE_VM_ENDPOINT
+                  value: unix:///host/var/run/docker.sock
+                - name: FABRIC_LOGGING_SPEC
+                  value: debug
+                - name: GOPATH
+                  value: /opt/gopath
+              image: hyperledger/fabric-tools:2.4.1
+              name: cli-org1
+              ports:
+                - containerPort: 30770
+              resources: {}
+              stdin: true
+              tty: true
+              volumeMounts:
+                - mountPath: /tlsca
+                  name: cli-org1-hostpath0
+                - mountPath: /host/var/run/
+                  name: cli-org1-hostpath1
+                - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+                  name: cli-org1-hostpath2
+                - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+                  name: cli-org1-hostpath3
+                - mountPath: /chaincode
+                  name: cli-org1-hostpath4
+                - mountPath: /other_certs
+                  name: cli-org1-hostpath5
+              workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+          restartPolicy: Always
+          volumes:
+            - hostPath:
+                path: /crypto_material/tlsca
+              name: cli-org1-hostpath0
+            - hostPath:
+                path: /var/run/
+              name: cli-org1-hostpath1
+            - hostPath:
+                path: /crypto_material/peerOrgs
+              name: cli-org1-hostpath2
+            - hostPath:
+                path: /crypto_material/channel-artifacts
+              name: cli-org1-hostpath3
+            - hostPath:
+                path: /crypto_material/ccaas
+              name: cli-org1-hostpath4
+            - hostPath:
+                path: /crypto_material/other_certs
+              name: cli-org1-hostpath5
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: cli-org2
+      name: cli-org2
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: cli-org2
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+            kompose.version: 1.26.0 (40646f47)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/dockercompose-fabric: "true"
+            io.kompose.service: cli-org2
+        spec:
+          containers:
+            - args:
+                - /bin/bash
+              env:
+                - name: CORE_PEER_ADDRESS
+                  value: peer1-org2-com:30756
+                - name: CORE_PEER_ID
+                  value: cli_org2
+                - name: CORE_PEER_LOCALMSPID
+                  value: org2
+                - name: CORE_PEER_MSPCONFIGPATH
+                  value: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/org2/peer1/msp/user/admin
+                - name: CORE_PEER_TLS_CERT_FILE
+                  value: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/org2/peer1/tls/signcerts/cert.pem
+                - name: CORE_PEER_TLS_CLIENTAUTHREQUIRED
+                  value: "false"
+                - name: CORE_PEER_TLS_ENABLED
+                  value: "true"
+                - name: CORE_PEER_TLS_KEY_FILE
+                  value: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/org2/peer1/tls/keystore/server.key
+                - name: CORE_PEER_TLS_ROOTCERT_FILE
+                  value: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/org2/peer1/tls/cacerts/cacert-30854.pem
+                - name: CORE_VM_ENDPOINT
+                  value: unix:///host/var/run/docker.sock
+                - name: FABRIC_LOGGING_SPEC
+                  value: debug
+                - name: GOPATH
+                  value: /opt/gopath
+              image: hyperledger/fabric-tools:2.4.1
+              name: cli-org2
+              ports:
+                - containerPort: 30780
+              resources: {}
+              stdin: true
+              tty: true
+              volumeMounts:
+                - mountPath: /tlsca
+                  name: cli-org2-hostpath0
+                - mountPath: /host/var/run/
+                  name: cli-org2-hostpath1
+                - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto
+                  name: cli-org2-hostpath2
+                - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+                  name: cli-org2-hostpath3
+                - mountPath: /chaincode
+                  name: cli-org2-hostpath4
+              workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+          restartPolicy: Always
+          volumes:
+            - hostPath:
+                path: /crypto_material/tlsca
+              name: cli-org2-hostpath0
+            - hostPath:
+                path: /var/run/
+              name: cli-org2-hostpath1
+            - hostPath:
+                path: /crypto_material/peerOrgs
+              name: cli-org2-hostpath2
+            - hostPath:
+                path: /crypto_material/channel-artifacts
+              name: cli-org2-hostpath3
+            - hostPath:
+                path: /crypto_material/ccaas
+              name: cli-org2-hostpath4
+    status: {}
+
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: orderer1-org0-com
+      name: orderer1-org0-com
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: orderer1-org0-com
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+            kompose.version: 1.26.0 (40646f47)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/dockercompose-fabric: "true"
+            io.kompose.service: orderer1-org0-com
+        spec:
+          containers:
+            - args:
+                - orderer
+              env:
+                - name: FABRIC_LOGGING_SPEC
+                  value: grpc=debug:debug
+                - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
+                  value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+                - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
+                  value: /var/hyperledger/orderer/tls/keystore/server.key
+                - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
+                  value: '[/var/hyperledger/orderer/tls/cacerts/cacert-30854.pem]'
+                - name: ORDERER_GENERAL_GENESISFILE
+                  value: /var/hyperledger/orderer/orderer.genesis.block
+                - name: ORDERER_GENERAL_GENESISMETHOD
+                  value: file
+                - name: ORDERER_GENERAL_LISTENADDRESS
+                  value: 0.0.0.0
+                - name: ORDERER_GENERAL_LISTENPORT
+                  value: "30750"
+                - name: ORDERER_GENERAL_LOCALMSPDIR
+                  value: /var/hyperledger/orderer/msp
+                - name: ORDERER_GENERAL_LOCALMSPID
+                  value: org0
+                - name: ORDERER_GENERAL_TLS_CERTIFICATE
+                  value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+                - name: ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED
+                  value: "false"
+                - name: ORDERER_GENERAL_TLS_ENABLED
+                  value: "true"
+                - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+                  value: /var/hyperledger/orderer/tls/keystore/server.key
+                - name: ORDERER_GENERAL_TLS_ROOTCAS
+                  value: '[/var/hyperledger/orderer/tls/cacerts/cacert-30854.pem]'
+              image: hyperledger/fabric-orderer:2.4.1
+              name: orderer1-org0-com
+              ports:
+                - containerPort: 30750
+              resources: {}
+              volumeMounts:
+                - mountPath: /var/hyperledger/orderer/orderer.genesis.block
+                  name: orderer1-org0-com-hostpath0
+                - mountPath: /var/hyperledger/orderer/msp
+                  name: orderer1-org0-com-hostpath1
+                - mountPath: /var/hyperledger/orderer/tls
+                  name: orderer1-org0-com-hostpath2
+              workingDir: /opt/gopath/src/github.com/hyperledger/fabric
+          hostname: orderer1-org0-com
+          restartPolicy: Always
+          volumes:
+            - hostPath:
+                path: /crypto_material/channel-artifacts/genesis.block
+              name: orderer1-org0-com-hostpath0
+            - hostPath:
+                path: /crypto_material/ordererOrgs/org0/orderer1/msp
+              name: orderer1-org0-com-hostpath1
+            - hostPath:
+                path: /crypto_material/ordererOrgs/org0/orderer1/tls
+              name: orderer1-org0-com-hostpath2
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: orderer2-org0-com
+      name: orderer2-org0-com
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: orderer2-org0-com
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+            kompose.version: 1.26.0 (40646f47)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/dockercompose-fabric: "true"
+            io.kompose.service: orderer2-org0-com
+        spec:
+          containers:
+            - args:
+                - orderer
+              env:
+                - name: FABRIC_LOGGING_SPEC
+                  value: grpc=debug:debug
+                - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
+                  value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+                - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
+                  value: /var/hyperledger/orderer/tls/keystore/server.key
+                - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
+                  value: '[/var/hyperledger/orderer/tls/cacerts/cacert-30854.pem]'
+                - name: ORDERER_GENERAL_GENESISFILE
+                  value: /var/hyperledger/orderer/orderer.genesis.block
+                - name: ORDERER_GENERAL_GENESISMETHOD
+                  value: file
+                - name: ORDERER_GENERAL_LISTENADDRESS
+                  value: 0.0.0.0
+                - name: ORDERER_GENERAL_LISTENPORT
+                  value: "30760"
+                - name: ORDERER_GENERAL_LOCALMSPDIR
+                  value: /var/hyperledger/orderer/msp
+                - name: ORDERER_GENERAL_LOCALMSPID
+                  value: org0
+                - name: ORDERER_GENERAL_TLS_CERTIFICATE
+                  value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+                - name: ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED
+                  value: "false"
+                - name: ORDERER_GENERAL_TLS_ENABLED
+                  value: "true"
+                - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+                  value: /var/hyperledger/orderer/tls/keystore/server.key
+                - name: ORDERER_GENERAL_TLS_ROOTCAS
+                  value: '[/var/hyperledger/orderer/tls/cacerts/cacert-30854.pem]'
+              image: hyperledger/fabric-orderer:2.4.1
+              name: orderer2-org0-com
+              ports:
+                - containerPort: 30760
+              resources: {}
+              volumeMounts:
+                - mountPath: /var/hyperledger/orderer/orderer.genesis.block
+                  name: orderer2-org0-com-hostpath0
+                - mountPath: /var/hyperledger/orderer/msp
+                  name: orderer2-org0-com-hostpath1
+                - mountPath: /var/hyperledger/orderer/tls
+                  name: orderer2-org0-com-hostpath2
+              workingDir: /opt/gopath/src/github.com/hyperledger/fabric
+          hostname: orderer2-org0-com
+          restartPolicy: Always
+          volumes:
+            - hostPath:
+                path: /crypto_material/channel-artifacts/genesis.block
+              name: orderer2-org0-com-hostpath0
+            - hostPath:
+                path: /crypto_material/ordererOrgs/org0/orderer2/msp
+              name: orderer2-org0-com-hostpath1
+            - hostPath:
+                path: /crypto_material/ordererOrgs/org0/orderer2/tls
+              name: orderer2-org0-com-hostpath2
+    status: {}
+
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: peer1-org1-com
+      name: peer1-org1-com
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: peer1-org1-com
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+            kompose.version: 1.26.0 (40646f47)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/dockercompose-fabric: "true"
+            io.kompose.service: peer1-org1-com
+        spec:
+          containers:
+            - args:
+                - peer
+                - node
+                - start
+              env:
+                - name: CORE_CHAINCODE_EXECUTETIMEOUT
+                  value: 3000s
+                - name: CORE_PEER_ADDRESS
+                  value: peer1-org1-com:30751
+                - name: CORE_PEER_CHAINCODEADDRESS
+                  value: peer1-org1-com:30752
+                - name: CORE_PEER_CHAINCODELISTENADDRESS
+                  value: 0.0.0.0:30752
+                - name: CORE_PEER_GATEWAY_ENABLED
+                  value: "true"
+                - name: CORE_PEER_GOSSIP_BOOTSTRAP
+                  value: peer1-org1-com:30751
+                - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+                  value: peer1-org1-com:30751
+                - name: CORE_PEER_GOSSIP_ORGLEADER
+                  value: "true"
+                - name: CORE_PEER_GOSSIP_USELEADERELECTION
+                  value: "false"
+                - name: CORE_PEER_ID
+                  value: peer1-org1-com
+                - name: CORE_PEER_LISTENADDRESS
+                  value: 0.0.0.0:30751
+                - name: CORE_PEER_LOCALMSPID
+                  value: org1
+                - name: CORE_PEER_PROFILE_ENABLED
+                  value: "true"
+                - name: CORE_PEER_TLS_CERT_FILE
+                  value: /etc/hyperledger/fabric/tls/signcerts/cert.pem
+                - name: CORE_PEER_TLS_CLIENTAUTHREQUIRED
+                  value: "false"
+                - name: CORE_PEER_TLS_ENABLED
+                  value: "true"
+                - name: CORE_PEER_TLS_KEY_FILE
+                  value: /etc/hyperledger/fabric/tls/keystore/server.key
+                - name: CORE_PEER_TLS_ROOTCERT_FILE
+                  value: /etc/hyperledger/fabric/tls/cacerts/cacert-30854.pem
+                - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
+                  value: sample_network
+                - name: CORE_VM_ENDPOINT
+                  value: unix:///host/var/run/docker.sock
+                - name: FABRIC_LOGGING_SPEC
+                  value: debug
+                - name: GRPC_TRACE
+                  value: all
+                - name: GRPC_VERBOSITY
+                  value: DEBUG
+                - name: CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG
+                  value: "{\"peername\":\"org1-peer1\"}"
+              image: hyperledger/fabric-peer:2.4.1
+              name: peer1-org1-com
+              ports:
+                - containerPort: 30751
+                - containerPort: 30752
+              resources: {}
+              volumeMounts:
+                - mountPath: /host/var/run/
+                  name: peer1-org1-com-hostpath0
+                - mountPath: /etc/hyperledger/fabric/msp
+                  name: peer1-org1-com-hostpath1
+                - mountPath: /etc/hyperledger/fabric/tls
+                  name: peer1-org1-com-hostpath2
+                - mountPath: /etc/hyperledger/fabric/tlsca
+                  name: peer1-org1-com-hostpath3
+                - mountPath: /etc/hyperledger/fabric/ca
+                  name: peer1-org1-com-hostpath4
+              workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+          hostname: peer1-org1-com
+          restartPolicy: Always
+          volumes:
+            - hostPath:
+                path: /var/run/
+              name: peer1-org1-com-hostpath0
+            - hostPath:
+                path: /crypto_material/peerOrgs/org1/peer1/msp
+              name: peer1-org1-com-hostpath1
+            - hostPath:
+                path: /crypto_material/peerOrgs/org1/peer1/tls
+              name: peer1-org1-com-hostpath2
+            - hostPath:
+                path: /crypto_material/tlsca
+              name: peer1-org1-com-hostpath3
+            - hostPath:
+                path: /crypto_material/ca
+              name: peer1-org1-com-hostpath4
+    status: {}  
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: peer1-org2-com
+      name: peer1-org2-com
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: peer1-org2-com
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose/docker-compose.yaml -o docker-compose/fabric-network --volumes hostPath
+            kompose.version: 1.26.0 (40646f47)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/dockercompose-fabric: "true"
+            io.kompose.service: peer1-org2-com
+        spec:
+          containers:
+            - args:
+                - peer
+                - node
+                - start
+              env:
+                - name: CORE_CHAINCODE_EXECUTETIMEOUT
+                  value: 3000s
+                - name: CORE_PEER_ADDRESS
+                  value: peer1-org2-com:30756
+                - name: CORE_PEER_CHAINCODEADDRESS
+                  value: peer1-org2-com:30757
+                - name: CORE_PEER_CHAINCODELISTENADDRESS
+                  value: 0.0.0.0:30757
+                - name: CORE_PEER_GATEWAY_ENABLED
+                  value: "true"
+                - name: CORE_PEER_GOSSIP_BOOTSTRAP
+                  value: peer1-org2-com:30756
+                - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+                  value: peer1-org2-com:30756
+                - name: CORE_PEER_GOSSIP_ORGLEADER
+                  value: "true"
+                - name: CORE_PEER_GOSSIP_USELEADERELECTION
+                  value: "false"
+                - name: CORE_PEER_ID
+                  value: peer1-org2-com
+                - name: CORE_PEER_LISTENADDRESS
+                  value: 0.0.0.0:30756
+                - name: CORE_PEER_LOCALMSPID
+                  value: org2
+                - name: CORE_PEER_PROFILE_ENABLED
+                  value: "true"
+                - name: CORE_PEER_TLS_CERT_FILE
+                  value: /etc/hyperledger/fabric/tls/signcerts/cert.pem
+                - name: CORE_PEER_TLS_CLIENTAUTHREQUIRED
+                  value: "false"
+                - name: CORE_PEER_TLS_ENABLED
+                  value: "true"
+                - name: CORE_PEER_TLS_KEY_FILE
+                  value: /etc/hyperledger/fabric/tls/keystore/server.key
+                - name: CORE_PEER_TLS_ROOTCERT_FILE
+                  value: /etc/hyperledger/fabric/tls/cacerts/cacert-30854.pem
+                - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
+                  value: sample_network
+                - name: CORE_VM_ENDPOINT
+                  value: unix:///host/var/run/docker.sock
+                - name: FABRIC_LOGGING_SPEC
+                  value: debug
+                - name: GRPC_TRACE
+                  value: all
+                - name: GRPC_VERBOSITY
+                  value: DEBUG
+                - name: CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG
+                  value: "{\"peername\":\"org2-peer1\"}"
+              image: hyperledger/fabric-peer:2.4.1
+              name: peer1-org2-com
+              ports:
+                - containerPort: 30756
+                - containerPort: 30757
+              resources: {}
+              volumeMounts:
+                - mountPath: /host/var/run/
+                  name: peer1-org2-com-hostpath0
+                - mountPath: /etc/hyperledger/fabric/msp
+                  name: peer1-org2-com-hostpath1
+                - mountPath: /etc/hyperledger/fabric/tls
+                  name: peer1-org2-com-hostpath2
+                - mountPath: /etc/hyperledger/fabric/tlsca
+                  name: peer1-org2-com-hostpath3
+                - mountPath: /etc/hyperledger/fabric/ca
+                  name: peer1-org2-com-hostpath4
+              workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+          hostname: peer1-org2-com
+          restartPolicy: Always
+          volumes:
+            - hostPath:
+                path: /var/run/
+              name: peer1-org2-com-hostpath0
+            - hostPath:
+                path: /crypto_material/peerOrgs/org2/peer1/msp
+              name: peer1-org2-com-hostpath1
+            - hostPath:
+                path: /crypto_material/peerOrgs/org2/peer1/tls
+              name: peer1-org2-com-hostpath2
+            - hostPath:
+                path: /crypto_material/tlsca
+              name: peer1-org2-com-hostpath3
+            - hostPath:
+                path: /crypto_material/ca
+              name: peer1-org2-com-hostpath4
+    status: {}
+
+kind: List
+metadata: {}
+

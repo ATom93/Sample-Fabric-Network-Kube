@@ -1,0 +1,190 @@
+apiVersion: v1
+items:
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose-ca.yaml -o docker-compose/fabric-ca 
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ca-example-com
+      name: ca-example-com
+    spec:
+      type: NodePort
+      ports:
+        - name: "30754"
+          port: 30754
+          targetPort: 30754
+          nodePort: 30754
+      selector:
+        io.kompose.service: ca-example-com
+    status:
+      loadBalancer: {}
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose-ca.yaml -o docker-compose/fabric-ca 
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: tlsca-example-com
+      name: tlsca-example-com
+    spec:
+      type: NodePort
+      ports:
+        - name: "30854"
+          port: 30854
+          targetPort: 30854
+          nodePort: 30854
+      selector:
+        io.kompose.service: tlsca-example-com
+    status:
+      loadBalancer: {}
+
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      creationTimestamp: null
+      name: dockercompose-fabric
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  io.kompose.network/dockercompose-fabric: "true"
+      podSelector:
+        matchLabels:
+          io.kompose.network/dockercompose-fabric: "true"
+
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose-ca.yaml -o docker-compose/fabric-ca 
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ca-example-com
+      name: ca-example-com
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: ca-example-com
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose/docker-compose-ca.yaml -o docker-compose/fabric-ca 
+            kompose.version: 1.26.0 (40646f47)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/dockercompose-fabric: "true"
+            io.kompose.service: ca-example-com
+        spec:
+          containers:
+            - args:
+                - sh
+                - -c
+                - fabric-ca-server start -d --ca.certfile /etc/hyperledger/fabric-ca-server-config/server.crt --ca.keyfile /etc/hyperledger/fabric-ca-server-config/server.key -b admin:adminpw
+              env:
+                - name: FABRIC_CA_HOME
+                  value: /etc/hyperledger/fabric-ca-server
+                - name: FABRIC_CA_SERVER_CA_NAME
+                  value: rootca
+                - name: FABRIC_CA_SERVER_CSR_HOSTS
+                  value: localhost
+                - name: FABRIC_CA_SERVER_PORT
+                  value: "30754"
+                - name: FABRIC_CA_SERVER_TLS_CERTFILE
+                  value: /etc/hyperledger/fabric-ca-server-config/server.crt
+                - name: FABRIC_CA_SERVER_TLS_ENABLED
+                  value: "false"
+                - name: FABRIC_CA_SERVER_TLS_KEYFILE
+                  value: /etc/hyperledger/fabric-ca-server-config/server.key
+              image: hyperledger/fabric-ca:latest
+              name: ca-example-com
+              ports:
+                - containerPort: 30754
+              resources: {}
+              volumeMounts:
+                - mountPath: /etc/hyperledger/fabric-ca-server-config
+                  name: ca-example-com-hostpath0
+          hostname: ca-example-com
+          restartPolicy: Always
+          volumes:
+            - hostPath:
+                path: /crypto_material/ca
+              name: ca-example-com-hostpath0
+    status: {}
+
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose/docker-compose-ca.yaml -o docker-compose/fabric-ca 
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: tlsca-example-com
+      name: tlsca-example-com
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: tlsca-example-com
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose/docker-compose-ca.yaml -o docker-compose/fabric-ca 
+            kompose.version: 1.26.0 (40646f47)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/dockercompose-fabric: "true"
+            io.kompose.service: tlsca-example-com
+        spec:
+          containers:
+            - args:
+                - sh
+                - -c
+                - fabric-ca-server start -d --ca.certfile /etc/hyperledger/fabric-ca-server-config/server.crt --ca.keyfile /etc/hyperledger/fabric-ca-server-config/server.key -b admin:adminpw
+              env:
+                - name: FABRIC_CA_HOME
+                  value: /etc/hyperledger/fabric-ca-server
+                - name: FABRIC_CA_SERVER_CA_NAME
+                  value: roottlsca
+                - name: FABRIC_CA_SERVER_CSR_HOSTS
+                  value: localhost
+                - name: FABRIC_CA_SERVER_PORT
+                  value: "30854"
+                - name: FABRIC_CA_SERVER_TLS_CERTFILE
+                  value: /etc/hyperledger/fabric-ca-server-config/server.crt
+                - name: FABRIC_CA_SERVER_TLS_ENABLED
+                  value: "false"
+                - name: FABRIC_CA_SERVER_TLS_KEYFILE
+                  value: /etc/hyperledger/fabric-ca-server-config/server.key
+              image: hyperledger/fabric-ca:latest
+              name: tlsca-example-com
+              ports:
+                - containerPort: 30854
+              resources: {}
+              volumeMounts:
+                - mountPath: /etc/hyperledger/fabric-ca-server-config
+                  name: tlsca-example-com-hostpath0
+          hostname: tlsca-example-com
+          restartPolicy: Always
+          volumes:
+            - hostPath:
+                path: /crypto_material/tlsca
+              name: tlsca-example-com-hostpath0
+    status: {}
+    
+kind: List
+metadata: {}

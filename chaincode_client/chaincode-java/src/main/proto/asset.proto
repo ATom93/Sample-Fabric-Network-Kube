@@ -1,0 +1,51 @@
+syntax = "proto2";
+
+package org.hyperledger.fabric.samples.assettransfer;
+
+option java_multiple_files = true;
+option java_package = "org.hyperledger.fabric.samples.assettransfer";
+option java_outer_classname = "AssetClass";
+
+message Asset {
+
+  required string ID = 1;
+  required string stato = 2;
+  required string oggetto = 3;
+  required string descrizione = 4;
+  required int32 importoRDA = 5;
+  required int32 ivaRDA = 6;
+  required string terminePresentazioni = 7;
+  required string tipoAggiudicazione = 8;
+  required string tipoOfferta = 9;
+  required string numeroRilanci = 10;
+
+  optional int32 punteggioTecnico = 11;
+  optional int32 punteggioEconomico = 12;
+  optional string calcoloPunteggioEconomico = 13;
+
+  optional int64 dataInvioRFx = 14;
+  
+  repeated Offer offers = 15;
+  //repeated TechnicalCriteria criteriTecnici = 15;
+  repeated Message message = 16;
+  
+}
+
+message Offer {
+  required string createdBy = 1;
+  required int32 importo = 2;
+}
+
+message Message {
+  required string sender = 1;
+  required string receiver = 2;
+  required string object = 3;
+  required string text = 4;
+  required string timestamp = 5;
+}
+
+/*message TechnicalCriteria {
+  required string descrizione = 1;
+  required int32 punteggioMax = 2;
+}*/
+
