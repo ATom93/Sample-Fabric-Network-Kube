@@ -1,0 +1,23 @@
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.EnrollAdmin $(minikube ip) http://admin:password@127.0.0.1:5984 wallet
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.RegisterUser $(minikube ip) http://admin:password@127.0.0.1:5984 wallet pass buyer1 buyer
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.RegisterUser $(minikube ip) http://admin:password@127.0.0.1:5984 wallet pass supplier1 supplier
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.RegisterUser $(minikube ip) http://admin:password@127.0.0.1:5984 wallet pass supplier2 supplier
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.Client $(minikube ip) http://admin:password@127.0.0.1:5984 wallet buyer1 pass mychannel CreateAsset asset_1 gara event_1 init_asset 8/9/2022
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.Client $(minikube ip) http://admin:password@127.0.0.1:5984 wallet buyer1 pass mychannel AddAssetEvent asset_1 gara event_2 event_type1 8/9/2022
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.Client $(minikube ip) http://admin:password@127.0.0.1:5984 wallet buyer1 pass mychannel AddAssetEvent asset_1 offerta event_3 insert_offer 8/9/2022
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.Client $(minikube ip) http://admin:password@127.0.0.1:5984 wallet buyer1 pass mychannel ReadAsset asset_1
+
+
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.Client $(minikube ip) http://admin:password@127.0.0.1:5984 wallet buyer1 pass mychannel CreateAsset asset_2 gara event_1 init_asset 8/9/2022
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.Client $(minikube ip) http://admin:password@127.0.0.1:5984 wallet buyer1 pass mychannel AddAssetEvent asset_2 gara event_2 event_type1 8/9/2022
+
+java -cp application-java-2.4-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.Client $(minikube ip) http://admin:password@127.0.0.1:5984 wallet buyer1 pass mychannel ReadAsset asset_2 offerta event_3 insert_offer 8/9/2022
