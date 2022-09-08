@@ -10,7 +10,7 @@ message Event {
   required string event_id = 1;
   required string type = 2;
   required string created_by = 3;
-  required int64 timestamp = 4;
+  required string timestamp = 4;
 }
 
 message Asset {
@@ -18,71 +18,4 @@ message Asset {
   required string created_by = 2;
   required string type = 3;
   repeated Event events = 4;
-}
-
-message Gara {
-
-  required Asset asset = 1;
-
-  required string stato = 2;
-  required string oggetto = 3;
-  required string descrizione = 4;
-  required int32 importo_RDA = 5;
-  required int32 iva_RDA = 6;
-  required string termine_presentazioni = 7;
-  required string tipo_aggiudicazione = 8;
-  required string tipo_offerta = 9;
-  required string numero_rilanci = 10;
-
-  optional int32 peso_punteggio_tecnico = 11;
-  optional int32 peso_punteggio_economico = 12;
-  optional string calcolo_punteggio_economico = 13;
-  //definizione di un singolo criterio tecnico per definire la valutazione tecnica della gara
-  optional TechnicalCriteria criteri_tecnici = 14;
-
-  optional int64 data_invio_RFx = 15;
-  
-  repeated Offer offers = 16;
-
-  repeated Message message = 17;
-
-}
-
-message Offer {
-  required string createdBy = 1;
-  required int32 importo = 2;
-  optional Approval valutazione_amministrativa = 3;
-  optional TechnicalEvaluation valutazione_tecnica = 4;
-  optional EconomicalEvaluation valutazione_economica = 5;
-}
-
-message Message {
-  required string sender = 1;
-  required string receiver = 2;
-  required string object = 3;
-  required string text = 4;
-  required string timestamp = 5;
-}
-
-//valutazione amministrativa
-message Approval {
-  required string approvato = 1;
-  optional string motivazione = 2;
-}
-
-//valutazione tecnica
-message TechnicalEvaluation {
-  //required string criterio_tecnico = 1;
-  required int32 punteggio_tecnico = 2;
-}
-
-//criteri tecnici per valutazione tecnica
-message TechnicalCriteria {
-  required string descrizione = 1;
-  required int32 punteggio_max = 2;
-}
-
-//valutazione economica
-message EconomicalEvaluation {
-  required int32 punteggio_economico = 1;
 }

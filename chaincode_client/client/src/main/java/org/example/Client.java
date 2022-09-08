@@ -74,23 +74,13 @@ public class Client {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        } /*finally {
-            try {
-                if (gatewayManager != null) {
-                    gatewayManager.closeGRPCChannel();
-                }
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }*/
+        }
     }
 
-    public static void main(String[] args) throws CommitException, GatewayException, InterruptedException, IOException, CertificateException, InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException {
-
-        //BlockchainManager.init();
-        //BlockchainManager.addChannel(
-        //        args[0]
-        //);
+    public static void main(String[] args)
+            throws CommitException, GatewayException, InterruptedException,
+            IOException, CertificateException, InvalidKeyException,
+            NoSuchAlgorithmException, InvalidKeySpecException {
 
         String peerAddress = args[0];
         String dbAddress = args[1];
@@ -98,35 +88,12 @@ public class Client {
         String userName = args[3];
         String encryptionPassword = args[4];
         String channelName = args[5];
-        //String chaincodeName = args[6];
         String chaincodeMethod = args[6];
-        String argument = args[7];
 
-        //System.out.println("ARGUMENT:\t"+argument+"\n");
         Client client = null;
 
         switch (chaincodeMethod) {
-            case "CreateGara":
-                /*
-                    {
-                       "codice": "gara10",
-                       "oggetto": "oggetto di gara",
-                       "descrizione": "descrizione",
-                       "importoRDA": "4200",
-                       "IVA_RDA": "15",
-                       "termine_presentazione_offerte": "12/12/2021",
-                       "tipo_aggiudicazione": "Offerta Economicamente Più Vantaggiosa",
-                       "tipo_offerta": "A importo",
-                       "numero_rilanci": "2",
-                       "punteggio_tecnico": "20",
-                       "punteggio_economico": "80",
-                       "calcolo_punteggio_economico": "Per singola Posizione",
-                       "criteriTecnici": {
-                            "descrizione": "descrizione CT",
-                            "punteggioTecnicoMax": "10"
-                       }
-                    }
-                    */
+            case "CreateAsset":
                 client = new Client(
                         peerAddress,
                         channelName,
@@ -134,11 +101,12 @@ public class Client {
                         walletName,
                         encryptionPassword,
                         userName);
-                client.contract.CreateGara(argument, args[8]);
-                //argomenti: eventType, jsonGara
+                client.contract.CreateAsset(
+                        args[7], args[8], args[9], args[10], args[11]);
+                //argomenti: ID_asset, type_asset, eventID, eventType, eventDate
                 client.gatewayManager.closeGRPCChannel();
                 break;
-            case "ReadGara":
+            case "AddAssetEvent":
                 client = new Client(
                         peerAddress,
                         channelName,
@@ -146,11 +114,12 @@ public class Client {
                         walletName,
                         encryptionPassword,
                         userName);
-                client.contract.ReadGara(argument);
-                //argomenti: idGara
+                client.contract.AddAssetEvent(
+                        args[7], args[8], args[9], args[10]);
+                //argomenti: ID_asset, eventID, eventType, eventDate
                 client.gatewayManager.closeGRPCChannel();
                 break;
-            case "ReadInfoGara":
+            case "ReadAsset":
                 client = new Client(
                         peerAddress,
                         channelName,
@@ -158,118 +127,12 @@ public class Client {
                         walletName,
                         encryptionPassword,
                         userName);
-                client.contract.ReadInfoGara(argument);
-                client.gatewayManager.closeGRPCChannel();
-                break;
-            case "QueryTransaction":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
-                client.contract.QueryTransaction(argument);
-                client.gatewayManager.closeGRPCChannel();
-                break;
-            case "StateChange_InCorso":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
-                client.contract.StateChange_InCorso(argument, args[8]);
-                //argomenti: idEvento, idGara
-                client.gatewayManager.closeGRPCChannel();
-                break;
-            case "InsertOffer":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
-                client.contract.InsertOffer(argument, args[8], args[9]);
-                //argomenti: idEvento, idGara, importo
-                client.gatewayManager.closeGRPCChannel();
-                break;
-            case "StateChange_InValutazione":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
-                client.contract.StateChange_InValutazione(argument, args[8]);
-                //argomenti: idEvento, idGara
-                client.gatewayManager.closeGRPCChannel();
-                break;
-            case "InsertAdministrativeEvaluation":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
-                client.contract.InsertAdministrativeEvaluation(argument, args[8], args[9], args[10], args[11]);
-                //argomenti: idEvento, idGara, id_fornitore, approvazione, motivazione
-                client.gatewayManager.closeGRPCChannel();
-                break;
-            case "StateChange_Chiusura":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
-                client.contract.StateChange_Chiusura(argument, args[8]);
-                //argomenti: idEvento, idGara
-                client.gatewayManager.closeGRPCChannel();
-                break;
-            case "ReadSubmittedOffer":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
-                client.contract.ReadSubmittedOffer(argument);
-                //argomenti: idGara
-                client.gatewayManager.closeGRPCChannel();
-                break;
-            case "UpdateField":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
-                client.contract.UpdateField(argument, args[8], args[9], args[10]);
-                //argomenti: eventID, idGara, campo, nuovo valore
-                client.gatewayManager.closeGRPCChannel();
-                break;
-            case "AddGaraEvent":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
-                client.contract.AddGaraEvent(argument, args[8], args[9]);
-                //argomenti: idGara, eventId, eventType
+                client.contract.ReadAsset(
+                        args[7]);
+                //argomenti: ID_asset
                 client.gatewayManager.closeGRPCChannel();
                 break;
         }
     }
-
 
 }
