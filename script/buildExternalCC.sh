@@ -1,1 +1,1 @@
-docker build -t chaincode/basic ./chaincode_client/chaincode-java
+docker build -t chaincode/basic --no-cache  ./chaincode_client/chaincode-java

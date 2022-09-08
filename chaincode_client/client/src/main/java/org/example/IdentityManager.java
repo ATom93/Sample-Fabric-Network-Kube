@@ -25,13 +25,16 @@ public class IdentityManager {
         return certificate;
     }
 
+    /*
     private PrivateKey getPrivateKey(Path certificatePath) throws IOException, CertificateException, InvalidKeyException {
         PrivateKey privateKey = Identities.readPrivateKey(
                 getReader(certificatePath)
         );
         return privateKey;
     }
+    */
 
+    /*
     public Identity getIdentity(Path certificatePath, String mspId) {
         X509Certificate certificate = null;
         Identity identity = null;
@@ -61,5 +64,5 @@ public class IdentityManager {
             throw new RuntimeException(e);
         }
     }
-
+    */
 }

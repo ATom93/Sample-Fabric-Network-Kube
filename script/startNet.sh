@@ -45,6 +45,7 @@ cp $CRYPTO_PATH/config_files/config.yaml $CRYPTO_PATH/peerOrgs/org2/msp/
 
 printf "\ndeploymnent dei container per le Certification Authorities\n"
 kubectl apply -f configFiles_kube/fabric-ca.yaml
+kubectl apply -f configFiles_kube/fabric-tlsca.yaml
 
 sleep 50s
 

@@ -1,0 +1,12 @@
+ db:        
+        image: apache/couchdb
+        restart: always   
+        volumes: 
+            - ./etc:/opt/couchdb/etc/local.d  
+            - ./data:/opt/couchdb/data
+            - ./log:/opt/couchdb/var/log
+        ports:
+          - "5984:5984"
+        environment:
+          - 'COUCHDB_USER=admin'
+          - 'COUCHDB_PASSWORD=password' 

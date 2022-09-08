@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: db
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: db
+    spec:
+      containers:
+        - env:
+            - name: COUCHDB_PASSWORD
+              value: password
+            - name: COUCHDB_USER
+              value: admin
+          image: apache/couchdb
+          name: db
+          ports:
+            - containerPort: 5984
+          resources: {}
+          volumeMounts:
+            - mountPath: /opt/couchdb/etc/local.d
+              name: db-claim0
+            - mountPath: /opt/couchdb/data
+              name: db-claim1
+            - mountPath: /opt/couchdb/var/log
+              name: db-claim2
+      restartPolicy: Always
+      volumes:
+        - name: db-claim0
+          persistentVolumeClaim:
+            claimName: db-claim0
+        - name: db-claim1
+          persistentVolumeClaim:
+            claimName: db-claim1
+        - name: db-claim2
+          persistentVolumeClaim:
+            claimName: db-claim2
+status: {}

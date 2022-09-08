@@ -205,7 +205,7 @@ items:
                 - name: CORE_VM_ENDPOINT
                   value: unix:///host/var/run/docker.sock
                 - name: FABRIC_LOGGING_SPEC
-                  value: debug
+                  value: info #debug
                 - name: GOPATH
                   value: /opt/gopath
               image: hyperledger/fabric-tools:2.4.1
@@ -302,7 +302,7 @@ items:
                 - name: CORE_VM_ENDPOINT
                   value: unix:///host/var/run/docker.sock
                 - name: FABRIC_LOGGING_SPEC
-                  value: debug
+                  value: info #debug
                 - name: GOPATH
                   value: /opt/gopath
               image: hyperledger/fabric-tools:2.4.1
@@ -592,7 +592,7 @@ items:
                 - name: CORE_VM_ENDPOINT
                   value: unix:///host/var/run/docker.sock
                 - name: FABRIC_LOGGING_SPEC
-                  value: debug
+                  value: info #debug
                 - name: GRPC_TRACE
                   value: all
                 - name: GRPC_VERBOSITY
@@ -710,7 +710,7 @@ items:
                 - name: CORE_VM_ENDPOINT
                   value: unix:///host/var/run/docker.sock
                 - name: FABRIC_LOGGING_SPEC
-                  value: debug
+                  value: info #debug
                 - name: GRPC_TRACE
                   value: all
                 - name: GRPC_VERBOSITY
