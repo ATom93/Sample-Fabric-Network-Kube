@@ -22,6 +22,9 @@ import java.util.concurrent.TimeUnit;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import org.hyperledger.fabric.gateway.Wallet;
 import org.hyperledger.fabric.gateway.Wallets;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.net.ssl.SSLException;
 
@@ -51,13 +54,15 @@ public class Client {
         this.channelName = channelName;
 
         IdentityManager identityManager = new IdentityManager();
-        //recupero certificato e chiave peer per TLS
+        //recupero certificato peer per TLS
         Path peerTLSCertPath = FileSystems.getDefault().getPath(
                 "..", "..", "crypto_material", "peerOrgs", "org1", "peer1",
                 "tls", "signcerts", "cert.pem");
 
         try {
-            X509Certificate TLSCert = identityManager.getCertificate(peerTLSCertPath);
+            X509Certificate TLSCert =
+                    identityManager.getCertificate(peerTLSCertPath);
+                    //identityManager.getCertificateFromDatabase();
             this.gatewayManager = new GatewayManager(peerAddress, TLSCert);
 
             walletIdentityManager = new WalletIdentityManager(
@@ -66,7 +71,8 @@ public class Client {
                     walletIdentityManager.getIdentity(),
                     walletIdentityManager.getIdentitySigner()
             );
-            this.contract = new SmartContract(channelName, chaincodeName, gatewayBuilder);
+            this.contract = new SmartContract(channelName, chaincodeName,
+                    gatewayBuilder);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,7 +81,41 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
+
+    /*
+
+    public Mono<String> CreateAsset(CommonEvent event) {
+
+            String id = ...;
+            String eventId = ...;
+            String eventType = event.getEventType();
+            String eventDate = event.getEventDate();
+            String eventPayload = event.getPayload();
+
+            return Mono.just(
+                        this.contract.CreateAsset(id, eventId, eventType, eventDate, eventPayload)
+            )
+
+
+     }
+
+     public Mono<String> AddAssetEvent(CommonEvent event) {
+
+            String id = ...;
+            String eventId = ...;
+            String eventType = event.getEventType();
+            String eventDate = event.getEventDate();
+            String eventPayload = event.getPayload();
+
+            return Mono.just(
+                        this.contract.AddAssetEvent(id, eventId, eventType, eventDate, eventPayload)
+            )
+
+    }
+
+    */
 
     public static void main(String[] args)
             throws CommitException, GatewayException, InterruptedException,
@@ -90,47 +130,32 @@ public class Client {
         String channelName = args[5];
         String chaincodeMethod = args[6];
 
-        Client client = null;
+        Client client = new Client(
+                peerAddress,
+                channelName,
+                dbAddress,
+                walletName,
+                encryptionPassword,
+                userName);
 
         switch (chaincodeMethod) {
             case "CreateAsset":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
                 client.contract.CreateAsset(
                         args[7], args[8], args[9], args[10], args[11]);
                 //argomenti: ID_asset, type_asset, eventID, eventType, eventDate
-                client.gatewayManager.closeGRPCChannel();
+                //client.gatewayManager.closeGRPCChannel();
                 break;
             case "AddAssetEvent":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
                 client.contract.AddAssetEvent(
                         args[7], args[8], args[9], args[10]);
                 //argomenti: ID_asset, eventID, eventType, eventDate
-                client.gatewayManager.closeGRPCChannel();
+                //client.gatewayManager.closeGRPCChannel();
                 break;
             case "ReadAsset":
-                client = new Client(
-                        peerAddress,
-                        channelName,
-                        dbAddress,
-                        walletName,
-                        encryptionPassword,
-                        userName);
                 client.contract.ReadAsset(
                         args[7]);
                 //argomenti: ID_asset
-                client.gatewayManager.closeGRPCChannel();
+                //client.gatewayManager.closeGRPCChannel();
                 break;
         }
     }

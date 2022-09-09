@@ -33,10 +33,10 @@ public class EnrollAdmin {
 
 	public static void enrollAdmin(String caAddress, String dbAddress, String walletName) throws Exception {
 		String password = "adminpwd";
+
 		Properties props = new Properties();
-		props.put("pemFile",
-				"../../crypto_material/peerOrgs/org1/msp/cacerts/server.crt");
 		props.put("allowAllHostNames", "true");
+
 		HFCAClient caClient = HFCAClient.createNewInstance("http://" + caAddress + ":30754", props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 		caClient.setCryptoSuite(cryptoSuite);
@@ -44,7 +44,7 @@ public class EnrollAdmin {
 		// Create a wallet for managing identities
 		//Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
 		Wallet wallet = Wallets.newCouchDBWallet(new URL(
-				dbAddress/*"http://admin:password@127.0.0.1:5984"*/
+				dbAddress
 		), walletName);
 
 		// Check to see if we've already enrolled the admin user.

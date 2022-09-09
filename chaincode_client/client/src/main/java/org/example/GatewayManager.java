@@ -19,7 +19,7 @@ public class GatewayManager {
     private ManagedChannel grpcChannel;
 
     public GatewayManager(String peerAddress, X509Certificate TLSCert) throws SSLException {
-        grpcChannel = NettyChannelBuilder.forAddress(peerAddress,peerPort)/*forTarget(peerAddress+":"+peerPort)*/
+        grpcChannel = NettyChannelBuilder.forAddress(peerAddress,peerPort)
                 .sslContext(GrpcSslContexts.forClient().trustManager(TLSCert).build())
                 .overrideAuthority(peerHostname)
                 .build();

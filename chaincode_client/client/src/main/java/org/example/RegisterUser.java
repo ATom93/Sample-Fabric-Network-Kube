@@ -37,19 +37,15 @@ public class RegisterUser {
 		String adminPassword = "adminpwd";
 
 		Properties props = new Properties();
-
-		props.put("pemFile",
-				"../../crypto_material/peerOrgs/org1/msp/cacerts/server.crt");
-
 		props.put("allowAllHostNames", "true");
+
 		HFCAClient caClient = HFCAClient.createNewInstance("http://"+ caAddress + ":30754", props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 		caClient.setCryptoSuite(cryptoSuite);
 
 		// Create a wallet for managing identities
-		//Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
 		Wallet wallet = Wallets.newCouchDBWallet(new URL(
-				dbAddress/*"http://admin:password@127.0.0.1:5984"*/
+				dbAddress
 		), walletName);
 
 		// Check to see if we've already enrolled the user.
@@ -126,7 +122,7 @@ public class RegisterUser {
 
 		Identity user = Identities.newX509Identity("org1", enrollment);
 		wallet.put(enrollmentID, user, password);
-		System.out.println("Successfully enrolled user \"appUser\" and imported it into the wallet");
+		System.out.println("Successfully enrolled user \"" + enrollmentID + "\" and imported it into the wallet");
 	}
 
 }
