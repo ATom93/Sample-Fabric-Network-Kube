@@ -1,5 +1,6 @@
 package org.example;
 
+import org.apache.commons.io.IOUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.HttpClient;
@@ -24,14 +25,6 @@ public class IdentityManager {
 
     private Reader getReader(Path path) throws IOException {
         Reader reader = Files.newBufferedReader(path);
-
-        System.out.println("\nCERTIFICATE:\n");
-        BufferedReader br = (BufferedReader) reader;
-        while (br.readLine() != null) {
-            System.out.println(br.readLine());
-        }
-        System.out.println("\nend certificate\n");
-
         return reader;
     }
 
@@ -44,7 +37,6 @@ public class IdentityManager {
 
     public X509Certificate getCertificateFromDatabase() throws IOException, CertificateException, ParseException {
         String cert = getPeerCertificateFromDatabase();
-        System.out.println("\nPEER CERTIFICATE:\n"+cert+"\n");
         X509Certificate X509Ccertificate = Identities.readX509Certificate(cert);
         return X509Ccertificate;
     }
@@ -58,10 +50,14 @@ public class IdentityManager {
         CouchDbConnector db = new StdCouchDbConnector("wallet", dbInstance);
         String id = "peerCert";
         InputStream doc = db.getAsStream(id);
-        String output = new String(doc.readAllBytes(), StandardCharsets.UTF_8);
+        String output = IOUtils.toString(doc, StandardCharsets.UTF_8);
+        doc.close();
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(output);
-        return (String) json.get("data");
+        String certificate = (String) json.get("data");
+        //certificate = certificate.substring(27,certificate.length()-25);
+        System.out.println("\nCertificate:\n"+certificate+"\n");
+        return certificate;
     }
 
 }
