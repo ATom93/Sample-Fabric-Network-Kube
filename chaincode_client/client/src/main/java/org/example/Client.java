@@ -62,7 +62,7 @@ public class Client {
         try {
             X509Certificate TLSCert =
                     //identityManager.getCertificate(peerTLSCertPath);
-                    identityManager.getCertificateFromDatabase();
+                    identityManager.getCertificateFromDatabase(dbAddress);
             this.gatewayManager = new GatewayManager(peerAddress, TLSCert);
 
             walletIdentityManager = new WalletIdentityManager(

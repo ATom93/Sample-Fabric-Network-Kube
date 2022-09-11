@@ -35,19 +35,19 @@ public class IdentityManager {
         return certificate;
     }
 
-    public X509Certificate getCertificateFromDatabase() throws IOException, CertificateException, ParseException {
-        String cert = getPeerCertificateFromDatabase();
+    public X509Certificate getCertificateFromDatabase(String dbAddress) throws IOException, CertificateException, ParseException {
+        String cert = getPeerCertificateFromDatabase(dbAddress);
         X509Certificate X509Ccertificate = Identities.readX509Certificate(cert);
         return X509Ccertificate;
     }
 
-    private String getPeerCertificateFromDatabase() throws IOException, ParseException {
+    private String getPeerCertificateFromDatabase(String dbAddress) throws IOException, ParseException {
         HttpClient httpClient = new StdHttpClient
                 .Builder()
-                .url("http://admin:password@127.0.0.1:5984")
+                .url(dbAddress)
                 .build();
         CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
-        CouchDbConnector db = new StdCouchDbConnector("wallet", dbInstance);
+        CouchDbConnector db = new StdCouchDbConnector("certificates", dbInstance);
         String id = "peerCert";
         InputStream doc = db.getAsStream(id);
         String output = IOUtils.toString(doc, StandardCharsets.UTF_8);
@@ -55,8 +55,7 @@ public class IdentityManager {
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(output);
         String certificate = (String) json.get("data");
-        //certificate = certificate.substring(27,certificate.length()-25);
-        System.out.println("\nCertificate:\n"+certificate+"\n");
+        //System.out.println("\nCertificate:\n"+certificate+"\n");
         return certificate;
     }
 
