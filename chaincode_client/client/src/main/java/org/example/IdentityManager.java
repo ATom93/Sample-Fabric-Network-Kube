@@ -16,8 +16,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.InvalidKeyException;
-import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -55,7 +53,6 @@ public class IdentityManager {
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(output);
         String certificate = (String) json.get("data");
-        //System.out.println("\nCertificate:\n"+certificate+"\n");
         return certificate;
     }
 

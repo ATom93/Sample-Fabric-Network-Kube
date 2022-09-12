@@ -13,17 +13,8 @@ public class BlockchainManager {
         process.waitFor();
     }
 
-    public static void init() throws IOException, InterruptedException {
-        executeScript("./init.sh");
-    }
-
     public static void addChannel(String channelName) throws IOException, InterruptedException {
         executeScript("./addNewChannel.sh " + channelName);
     }
-
-    public static void registerAndEnrollUser(String n) throws IOException, InterruptedException {
-        executeScript("./script/register-enroll_client.sh" + n);
-    }
-
 
 }

@@ -34,6 +34,10 @@ public class EnrollAdmin {
 	public static void enrollAdmin(String caAddress, String dbAddress, String walletName) throws Exception {
 		String password = "adminpwd";
 
+		String adminOrg = "org1";
+		String adminName = "admin";
+		String adminSecret = "adminpw";
+
 		Properties props = new Properties();
 		props.put("allowAllHostNames", "true");
 
@@ -57,9 +61,9 @@ public class EnrollAdmin {
 		final EnrollmentRequest enrollmentRequestTLS = new EnrollmentRequest();
 		enrollmentRequestTLS.addHost(caAddress);
 		enrollmentRequestTLS.setProfile("tls");
-		Enrollment enrollment = caClient.enroll("admin", "adminpw", enrollmentRequestTLS);
-		Identity user = Identities.newX509Identity("org1", enrollment);
-		wallet.put("admin", user, password);
+		Enrollment enrollment = caClient.enroll(adminName, adminSecret, enrollmentRequestTLS);
+		Identity user = Identities.newX509Identity(adminOrg, enrollment);
+		wallet.put(adminName, user, password);
 		System.out.println("Successfully enrolled user \"admin\" and imported it into the wallet");
 	}
 }

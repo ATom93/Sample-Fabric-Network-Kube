@@ -7,7 +7,6 @@ import org.hyperledger.fabric.client.Gateway;
 import org.hyperledger.fabric.client.identity.Identity;
 import org.hyperledger.fabric.client.identity.Signer;
 
-import javax.net.ssl.ManagerFactoryParameters;
 import javax.net.ssl.SSLException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;

@@ -15,7 +15,6 @@ import org.hyperledger.fabric_ca.sdk.HFCAClient;
 import org.hyperledger.fabric_ca.sdk.RegistrationRequest;
 
 import java.net.URL;
-import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.util.Properties;
 import java.util.Set;
@@ -34,7 +33,11 @@ public class RegisterUser {
 	}
 
 	public static void registerUser(String caAddress, String dbAddress, String walletName, String password, String enrollmentID, String role) throws Exception {
-		String adminPassword = "adminpwd";
+		String adminName = "admin";
+		String adminSecret = "adminpwd";
+
+		String userOrg = "org1";
+
 
 		Properties props = new Properties();
 		props.put("allowAllHostNames", "true");
@@ -49,12 +52,12 @@ public class RegisterUser {
 		), walletName);
 
 		// Check to see if we've already enrolled the user.
-		if (wallet.get("appUser", adminPassword) != null) {
-			System.out.println("An identity for the user \"appUser\" already exists in the wallet");
+		if (wallet.get(enrollmentID, password) != null) {
+			System.out.println("An identity for the user \""+ enrollmentID + "\" already exists in the wallet");
 			return;
 		}
 
-		X509Identity adminIdentity = (X509Identity)wallet.get("admin", adminPassword);
+		X509Identity adminIdentity = (X509Identity)wallet.get(adminName, adminSecret);
 		if (adminIdentity == null) {
 			System.out.println("\"admin\" needs to be enrolled and added to the wallet first");
 			return;
@@ -120,7 +123,7 @@ public class RegisterUser {
 
 		Enrollment enrollment = caClient.enroll(enrollmentID, enrollmentSecret, enrollmentRequest);
 
-		Identity user = Identities.newX509Identity("org1", enrollment);
+		Identity user = Identities.newX509Identity(userOrg, enrollment);
 		wallet.put(enrollmentID, user, password);
 		System.out.println("Successfully enrolled user \"" + enrollmentID + "\" and imported it into the wallet");
 	}

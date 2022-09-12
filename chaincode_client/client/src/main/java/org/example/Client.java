@@ -1,33 +1,10 @@
 package org.example;
 
 import org.hyperledger.fabric.client.*;
-import org.hyperledger.fabric.client.identity.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
-import java.util.concurrent.TimeUnit;
-
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
-import org.hyperledger.fabric.gateway.Wallet;
-import org.hyperledger.fabric.gateway.Wallets;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import javax.net.ssl.SSLException;
-
 
 public class Client {
 
@@ -117,10 +94,7 @@ public class Client {
 
     */
 
-    public static void main(String[] args)
-            throws CommitException, GatewayException, InterruptedException,
-            IOException, CertificateException, InvalidKeyException,
-            NoSuchAlgorithmException, InvalidKeySpecException {
+    public static void main(String[] args) {
 
         String peerAddress = args[0];
         String dbAddress = args[1];

@@ -1,17 +1,12 @@
 package org.example;
 
 import org.hyperledger.fabric.client.*;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 public class SmartContract implements SmartContractInterface {
 
     String channelName;
     String chaincodeName;
-    Contract contract;
     Gateway.Builder gatewayBuilder;
 
     public SmartContract(String channelName, String chaincodeName, Gateway.Builder gatewayBuilder) {
