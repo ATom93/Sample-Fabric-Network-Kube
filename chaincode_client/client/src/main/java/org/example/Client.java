@@ -55,9 +55,9 @@ public class Client {
 
         IdentityManager identityManager = new IdentityManager();
         //recupero certificato peer per TLS
-        Path peerTLSCertPath = FileSystems.getDefault().getPath(
-                "..", "..", "crypto_material", "peerOrgs", "org1", "peer1",
-                "tls", "signcerts", "cert.pem");
+        //Path peerTLSCertPath = FileSystems.getDefault().getPath(
+        //        "..", "..", "crypto_material", "peerOrgs", "org1", "peer1",
+        //        "tls", "signcerts", "cert.pem");
 
         try {
             X509Certificate TLSCert =
