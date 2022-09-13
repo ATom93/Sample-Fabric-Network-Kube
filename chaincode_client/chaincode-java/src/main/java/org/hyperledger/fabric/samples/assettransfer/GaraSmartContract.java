@@ -39,83 +39,10 @@ public final class GaraSmartContract implements ContractInterface {
         EXCEPTION;
     }
 
-    //handler eseguito prima dell'invocazione di ogni smart contract
-    /*
-    @Override
-    public void beforeTransaction(Context ctx) {
-        ChaincodeStub stub = ctx.getStub();
-
-        //recupero del nome dello smart contract invocato
-        String functionName = stub.getFunction();
-
-        ClientIdentity ci = null;
-        String mspId;
-        String clientRole = "";
-
-        //recupero ID dell'utente che ha invocato lo smart contract
-        try {
-            ci = new ClientIdentity(stub);
-            mspId = ci.getMSPID();
-            clientRole = ci.getAttributeValue("role");
-        } catch (Exception e) {
-            String errorMessage = "ClientIdentity exception";
-            System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, AssetTransferErrors.NOT_ALLOWED.toString());
-        }
-
-        System.out.println("\nInvoked smart contract:\t"+functionName+
-                            "\nrequestor ID:\t"+ci.getId()+
-                            "\nrequestor MSP ID:\t"+mspId+
-                            "\nrequestor role:\t"+clientRole+
-                            "\n");
-
-        //l'accesso ai metodi del chaincode è ristretto solo ad una sola organizzazione di clienti
-        if (!mspId.equals("org1")) {
-            String errorMessage = String.format("%s not allowed to invoke the chaincode", mspId, functionName);
-            System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, AssetTransferErrors.NOT_ALLOWED.toString());
-        } else {
-            //a seconda del metodo richiamato dall'utente, 
-            //esso può avere o meno accesso a quell'operazione a seconda del ruolo all'interno dell'organizzazione
-            if (
-                functionName.equals("CreateGara") ||
-                functionName.equals("StateChange_InCorso") ||
-                functionName.equals("StateChange_InValutazione") ||
-                functionName.equals("StateChange_Chiusura") ||
-                functionName.equals("UpdateField") ||
-                functionName.equals("ReadGara") ||
-                functionName.equals("InsertAdministrativeEvaluation") ||
-                functionName.equals("InsertTechnicalEvaluation") ||
-                functionName.equals("InsertEconomicalEvaluation")
-            ) {
-                if (
-                    !clientRole.equals("buyer")
-                ) {
-                    String errorMessage = String.format("%s not allowed to invoke %s", clientRole, functionName);
-                    System.out.println(errorMessage);
-                    throw new ChaincodeException(errorMessage, AssetTransferErrors.NOT_ALLOWED.toString());
-                }
-            } else if (
-                functionName.equals("InsertOffer") ||
-                functionName.equals("ReadSubmittedOffer") ||
-                functionName.equals("ReadInfoGara")
-            ) {
-                if (
-                    !clientRole.equals("supplier")
-                ) {
-                    String errorMessage = String.format("%s not allowed to invoke %s", clientRole, functionName);
-                    System.out.println(errorMessage);
-                    throw new ChaincodeException(errorMessage, AssetTransferErrors.NOT_ALLOWED.toString());
-                }
-            }
-        }
-    }
-     */
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
     public String CreateAsset(
-            final Context ctx, final String ID, String type,
-            String eventID, String eventType, String eventDate) {
+            final Context ctx, final String ID,  String eventID, String eventType, String eventDate, String eventPayload) {
         ChaincodeStub stub = ctx.getStub();
         ClientIdentity ci = null;
 
@@ -143,13 +70,13 @@ public final class GaraSmartContract implements ContractInterface {
                 .setType(eventType)
                 .setTimestamp(eventDate)
                 .setCreatedBy(ci.getId())
+                .setPayload(eventPayload)
                 .build();
 
         //creazione dell'asset relativo alla gara (contenuto nel messaggio PB "Gara")
         Asset asset = Asset.newBuilder()
                 .setID(ID)
                 .setCreatedBy(ci.getId())
-                .setType(type)
                 .addEvents(event)
                 .build();
 
@@ -163,7 +90,8 @@ public final class GaraSmartContract implements ContractInterface {
     @Transaction(intent = Transaction.TYPE.EVALUATE)
     public String AddAssetEvent(
             final Context ctx, final String ID,
-            final String eventID, final String eventType, String eventDate) {
+            final String eventID, final String eventType, String eventDate, String eventPayload) {
+
         ChaincodeStub stub = ctx.getStub();
         byte[] assetByte = stub.getState(ID);
         Asset asset = null;
@@ -196,6 +124,7 @@ public final class GaraSmartContract implements ContractInterface {
                             .setType(eventType)
                             .setTimestamp(eventDate)
                             .setCreatedBy(ci.getId())
+                            .setPayload(eventPayload)
                             .build())
                     .build();
 

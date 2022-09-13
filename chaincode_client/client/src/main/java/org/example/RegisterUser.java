@@ -32,6 +32,17 @@ public class RegisterUser {
 		registerUser(caAddress, dbAddress, walletName, password, enrollmentID, role);
 	}
 
+	/**
+	 * Registration of a new user.
+	 *
+	 * @param caAddress Address of the Certification Authority
+	 * @param dbAddress Address of the DBMS where to store user certificates
+	 * @param walletName Name of the database where to store user certificates
+	 * @param password Password for user private key encryption
+	 * @param enrollmentID User identifier for the new user
+	 * @param role Role of the new user
+	 * @throws Exception
+	 */
 	public static void registerUser(String caAddress, String dbAddress, String walletName, String password, String enrollmentID, String role) throws Exception {
 		String adminName = "admin";
 		String adminSecret = "adminpwd";

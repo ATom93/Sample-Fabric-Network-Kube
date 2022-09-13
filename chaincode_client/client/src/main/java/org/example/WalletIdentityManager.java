@@ -18,6 +18,16 @@ public class WalletIdentityManager {
     String walletName;
     org.hyperledger.fabric.gateway.X509Identity oldIdentity;
 
+    /**
+     * Initialize WalletIdentityManager object
+     *
+     * @param walletIdentityLabel Label of the identity to retrieve from database
+     * @param dbAddress Address of the DBMS where user certificates are stored
+     * @param walletName Name of the database where user certificates are stored
+     * @param mspId Organization of the user of the certificate to retrieve
+     * @param password Password used to decrypt the private key in the retrieved certificate
+     * @throws Exception
+     */
     public WalletIdentityManager(String walletIdentityLabel, String dbAddress, String walletName, String mspId, String password) throws Exception {
         this.mspId = mspId;
         this.dbAddress = dbAddress;
@@ -39,10 +49,22 @@ public class WalletIdentityManager {
         }
     }
 
+    /**
+     *
+     * @return X509Identity object from a certificate
+     * @throws IOException
+     */
     public X509Identity getIdentity() throws IOException {
         return new X509Identity(mspId, oldIdentity.getCertificate());
     }
 
+    /**
+     *
+     * @return Signer object from user private key
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     public Signer getIdentitySigner() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         return Signers.newPrivateKeySigner(
                 oldIdentity.getPrivateKey()

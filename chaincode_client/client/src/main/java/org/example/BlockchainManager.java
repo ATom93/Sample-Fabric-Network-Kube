@@ -13,6 +13,13 @@ public class BlockchainManager {
         process.waitFor();
     }
 
+    /**
+     * Executes the script to add a new channel on the blockchain infrastructure
+     *
+     * @param channelName Name of the new Fabric Channel to create
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void addChannel(String channelName) throws IOException, InterruptedException {
         executeScript("./addNewChannel.sh " + channelName);
     }

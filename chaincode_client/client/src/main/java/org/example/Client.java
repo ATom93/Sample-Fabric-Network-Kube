@@ -5,6 +5,10 @@ import org.hyperledger.fabric.client.*;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import org.json.simple.*;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import reactor.core.publisher.Mono;
 
 public class Client {
 
@@ -15,7 +19,6 @@ public class Client {
     private String channelName;
     private String chaincodeName = "basic";
     public SmartContract contract;
-
 
     public Client(
             String peerAddress, String channelName,
@@ -31,10 +34,6 @@ public class Client {
         this.channelName = channelName;
 
         IdentityManager identityManager = new IdentityManager();
-        //recupero certificato peer per TLS
-        //Path peerTLSCertPath = FileSystems.getDefault().getPath(
-        //        "..", "..", "crypto_material", "peerOrgs", "org1", "peer1",
-        //        "tls", "signcerts", "cert.pem");
 
         try {
             X509Certificate TLSCert =
@@ -62,36 +61,55 @@ public class Client {
     }
 
     /*
+    public Mono<String> CreateAsset(CommonEvent event) throws ParseException {
 
-    public Mono<String> CreateAsset(CommonEvent event) {
-
-            String id = ...;
-            String eventId = ...;
+            String tenantId = event.getTenantId();
             String eventType = event.getEventType();
+            String microService = eventType.split("_")[0];
             String eventDate = event.getEventDate();
+            String eventId = tenantId + "_" + eventDate + "_" + eventType;
+
+            //JSONObject e JSONParser da org.json.simple
             String eventPayload = event.getPayload();
+            JSONObject eventPayloadJSON = (JSONObject) new JSONParser().parse(eventPayload);
+            if (eventPayloadJSON.containsKey("id")) {
+                String eventObjectId = (String) eventPayloadJSON.get("id");
+                String id = tenantId + "_" + microService + "_" + eventObjectId;
 
-            return Mono.just(
-                        this.contract.CreateAsset(id, eventId, eventType, eventDate, eventPayload)
-            )
+                return Mono.just(
+                            this.contract.CreateAsset(id, eventId, eventType, eventDate, eventPayload)
+                );
 
+            } else {
+                return Mono.just("Failure");
+            }
 
      }
 
-     public Mono<String> AddAssetEvent(CommonEvent event) {
+     public Mono<String> AddAssetEvent(CommonEvent event) throws ParseException {
 
-            String id = ...;
-            String eventId = ...;
+            String tenantId = event.getTenantId();
             String eventType = event.getEventType();
+            String microService = eventType.split("_")[0];
             String eventDate = event.getEventDate();
-            String eventPayload = event.getPayload();
+            String eventId = tenantId + "_" + eventDate + "_" + eventType;
 
-            return Mono.just(
-                        this.contract.AddAssetEvent(id, eventId, eventType, eventDate, eventPayload)
-            )
+            //JSONObject e JSONParser da org.json.simple
+            String eventPayload = event.getPayload();
+            JSONObject eventPayloadJSON = (JSONObject) new JSONParser().parse(eventPayload);
+            if (eventPayloadJSON.containsKey("id")) {
+                String eventObjectId = (String) eventPayloadJSON.get("id");
+                String id = tenantId + "_" + microService + "_" + eventObjectId;
+
+                return Mono.just(
+                            this.contract.AddAssetEvent(id, eventId, eventType, eventDate, eventPayload)
+                );
+
+            } else {
+                return Mono.just("Failure");
+            }
 
     }
-
     */
 
     public static void main(String[] args) {
@@ -116,13 +134,13 @@ public class Client {
             case "CreateAsset":
                 client.contract.CreateAsset(
                         args[7], args[8], args[9], args[10], args[11]);
-                //argomenti: ID_asset, type_asset, eventID, eventType, eventDate
+                //argomenti: ID_asset, eventID, eventType, eventDate, payload
                 //client.gatewayManager.closeGRPCChannel();
                 break;
             case "AddAssetEvent":
                 client.contract.AddAssetEvent(
-                        args[7], args[8], args[9], args[10]);
-                //argomenti: ID_asset, eventID, eventType, eventDate
+                        args[7], args[8], args[9], args[10], args[11]);
+                //argomenti: ID_asset, eventID, eventType, eventDate, payload
                 //client.gatewayManager.closeGRPCChannel();
                 break;
             case "ReadAsset":

@@ -31,6 +31,14 @@ public class EnrollAdmin {
 		enrollAdmin(caAddress, dbAddress, walletName);
 	}
 
+	/**
+	 * Enrollment of administrator for user registration
+	 *
+	 * @param caAddress Address of the Certification Authority
+	 * @param dbAddress Address of the DBMS where to store the administrator certificate
+	 * @param walletName Name of the database on CouchDB where to store certificates
+	 * @throws Exception
+	 */
 	public static void enrollAdmin(String caAddress, String dbAddress, String walletName) throws Exception {
 		String password = "adminpwd";
 

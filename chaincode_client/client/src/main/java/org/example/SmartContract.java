@@ -9,6 +9,13 @@ public class SmartContract implements SmartContractInterface {
     String chaincodeName;
     Gateway.Builder gatewayBuilder;
 
+    /**
+     * Initialize Smart Contract object
+     *
+     * @param channelName Name of the channel used to invoke Smart Contract methods
+     * @param chaincodeName Name of the chaincode deployed on the channel
+     * @param gatewayBuilder Gateway builder with configuration to connect to blockchain infrastructure
+     */
     public SmartContract(String channelName, String chaincodeName, Gateway.Builder gatewayBuilder) {
         this.chaincodeName = chaincodeName;
         this.channelName = channelName;
@@ -25,19 +32,30 @@ public class SmartContract implements SmartContractInterface {
         return contract;
     }
 
+    /**
+     * Create a new asset on the blockchain to keep track of
+     *
+     * @param ID Unique identifier of the asset
+     * @param eventID Unique identifier of the event of creation of the asset (first event for the asset)
+     * @param eventType Type of the event
+     * @param eventDate Timestamp of the event
+     * @param payload Payload of the received event
+     * @return
+     */
     @Override
-    public void CreateAsset(
-            String ID, String type, String eventID, String eventType, String eventDate) {
+    public String CreateAsset(
+            String ID, String eventID, String eventType, String eventDate, String payload) {
 
+        String output = "";
         Contract contract = GetContract(this.gatewayBuilder);
 
         try {
 
             System.out.println("\nsubmitting 'CreateAsset' Transaction...");
             byte[] result = contract.submitTransaction(
-                    "CreateAsset", ID, eventType, eventID, eventType, eventDate
+                    "CreateAsset", ID, eventID, eventType, eventDate, payload
             );
-            System.out.println(new String(result, StandardCharsets.UTF_8));
+            output = new String(result, StandardCharsets.UTF_8);
 
         } catch (EndorseException e) {
             e.printStackTrace();
@@ -50,12 +68,24 @@ public class SmartContract implements SmartContractInterface {
         } catch (GatewayException e) {
             e.printStackTrace();
         }
+        return output;
     };
 
+    /**
+     * Add a new event for an asset already registered on the blockchain
+     *
+     * @param ID Unique identifier of the asset
+     * @param eventID Unique identifier of the event
+     * @param eventType Type of the event to be registered on the asset
+     * @param eventDate Timestamp of the event
+     * @param eventPayload Payload of the received event
+     * @return
+     */
     @Override
-    public void AddAssetEvent(
-            String ID, String eventID, String eventType, String eventDate) {
+    public String AddAssetEvent(
+            String ID, String eventID, String eventType, String eventDate, String eventPayload) {
 
+        String output = "";
         Contract contract = GetContract(this.gatewayBuilder);
 
         try {
@@ -64,7 +94,7 @@ public class SmartContract implements SmartContractInterface {
             byte[] result = contract.submitTransaction(
                     "AddAssetEvent", ID, eventID, eventType, eventDate
             );
-            System.out.println(new String(result, StandardCharsets.UTF_8));
+            output = new String(result, StandardCharsets.UTF_8);
 
         } catch (EndorseException e) {
             e.printStackTrace();
@@ -77,8 +107,15 @@ public class SmartContract implements SmartContractInterface {
         } catch (GatewayException e) {
             e.printStackTrace();
         }
+        return output;
     };
 
+    /**
+     * Get a specific asset information
+     *
+     * @param ID Identifier of the asset to read from the blockchain
+     * @return A string with asset information registered on the blockchain
+     */
     @Override
     public String ReadAsset(String ID) {
 

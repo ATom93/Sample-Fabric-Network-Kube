@@ -26,6 +26,14 @@ public class IdentityManager {
         return reader;
     }
 
+    /**
+     * Get a X509Certificate object from a certificate on file system
+     *
+     * @param certificatePath Path of the certificate on file system
+     * @return X509Certificate object from the given certificate
+     * @throws IOException
+     * @throws CertificateException
+     */
     public X509Certificate getCertificate(Path certificatePath) throws IOException, CertificateException {
         X509Certificate certificate = Identities.readX509Certificate(
                 getReader(certificatePath)
@@ -33,6 +41,14 @@ public class IdentityManager {
         return certificate;
     }
 
+    /**
+     * Get a X509Certificate object from a certificate on a database
+     *
+     * @param dbAddress Address of the DBMS with a database where a peer node certificate is stored
+     * @return X509Certificate object from the given certificate
+     * @throws IOException
+     * @throws CertificateException
+     */
     public X509Certificate getCertificateFromDatabase(String dbAddress) throws IOException, CertificateException, ParseException {
         String cert = getPeerCertificateFromDatabase(dbAddress);
         X509Certificate X509Ccertificate = Identities.readX509Certificate(cert);

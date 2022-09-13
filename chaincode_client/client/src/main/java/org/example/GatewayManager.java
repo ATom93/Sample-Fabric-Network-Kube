@@ -17,6 +17,13 @@ public class GatewayManager {
 
     private ManagedChannel grpcChannel;
 
+    /**
+     * Creates a new GatewayManager instance.
+     *
+     * @param peerAddress Address of the peer to connect to
+     * @param TLSCert TLS certificate to authenticate on the peer node
+     * @throws SSLException
+     */
     public GatewayManager(String peerAddress, X509Certificate TLSCert) throws SSLException {
         grpcChannel = NettyChannelBuilder.forAddress(peerAddress,peerPort)
                 .sslContext(GrpcSslContexts.forClient().trustManager(TLSCert).build())
@@ -24,6 +31,14 @@ public class GatewayManager {
                 .build();
     };
 
+    /**
+     * Get a Gateway builder with connection configuration
+     *
+     * @param identity Identity of the user to be used for the Gateway builder
+     * @param signer Signer object used to sign transactions generated from a private key
+     * @return a Gateway builder
+     * @throws SSLException
+     */
     public Gateway.Builder getGatewayBuilder(Identity identity, Signer signer) throws SSLException {
         Gateway.Builder gatewayBuilder = Gateway.newInstance()
                 .identity(identity)

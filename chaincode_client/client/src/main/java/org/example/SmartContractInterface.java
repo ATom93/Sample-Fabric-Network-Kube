@@ -2,9 +2,9 @@ package org.example;
 
 public interface SmartContractInterface {
 
-    void CreateAsset(String ID, String type, String eventID, String eventType, String eventDate);
+    String CreateAsset(String ID, String eventID, String eventType, String eventDate, String payload);
 
-    void AddAssetEvent(String ID, String eventID, String eventType, String eventDate);
+    String AddAssetEvent(String ID, String eventID, String eventType, String eventDate, String eventPayload);
 
     String ReadAsset(String ID);
 
