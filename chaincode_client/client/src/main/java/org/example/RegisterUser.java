@@ -35,25 +35,30 @@ public class RegisterUser {
 	/**
 	 * Registration of a new user.
 	 *
-	 * @param caAddress Address of the Certification Authority
-	 * @param dbAddress Address of the DBMS where to store user certificates
-	 * @param walletName Name of the database where to store user certificates
+	 * @param caAddress Address of the Certification Authority (default port 30754, otherwise it must be included in the address)
+	 * @param dbAddress Address (with port) of the DBMS (CouchDB) where to store user certificates
+	 * @param walletName Name of the database on CouchDB where to store user certificates
 	 * @param password Password for user private key encryption
-	 * @param enrollmentID User identifier for the new user
+	 * @param enrollmentID Identifier for the new user
 	 * @param role Role of the new user
 	 * @throws Exception
 	 */
-	public static void registerUser(String caAddress, String dbAddress, String walletName, String password, String enrollmentID, String role) throws Exception {
-		String adminName = "admin";
-		String adminSecret = "adminpwd";
-
+	public static void registerUser(String caAddress, String dbAddress, String walletName, String password,
+									String enrollmentID/*, String userOrg*/, String role) throws Exception {
 		String userOrg = "org1";
 
+		String adminName = "admin-"+userOrg;
+		String adminSecret = "adminpwd";
 
 		Properties props = new Properties();
 		props.put("allowAllHostNames", "true");
 
-		HFCAClient caClient = HFCAClient.createNewInstance("http://"+ caAddress + ":30754", props);
+		HFCAClient caClient = null;
+		if (caAddress.contains(":")) {
+			caClient = HFCAClient.createNewInstance("http://" + caAddress, props);
+		} else {
+			caClient = HFCAClient.createNewInstance("http://" + caAddress + ":30754", props);
+		}
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 		caClient.setCryptoSuite(cryptoSuite);
 
@@ -70,9 +75,10 @@ public class RegisterUser {
 
 		X509Identity adminIdentity = (X509Identity)wallet.get(adminName, adminSecret);
 		if (adminIdentity == null) {
-			System.out.println("\"admin\" needs to be enrolled and added to the wallet first");
+			System.out.println("\"" + adminName + "\" needs to be enrolled and added to the wallet first");
 			return;
 		}
+
 		User admin = new User() {
 
 			@Override
@@ -92,7 +98,7 @@ public class RegisterUser {
 
 			@Override
 			public String getAffiliation() {
-				return "org1";
+				return userOrg;
 			}
 
 			@Override
@@ -113,7 +119,7 @@ public class RegisterUser {
 
 			@Override
 			public String getMspId() {
-				return "org1";
+				return userOrg;
 			}
 
 		};

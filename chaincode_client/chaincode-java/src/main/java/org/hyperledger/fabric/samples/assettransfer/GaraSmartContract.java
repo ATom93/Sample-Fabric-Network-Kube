@@ -49,9 +49,10 @@ public final class GaraSmartContract implements ContractInterface {
         //controllo esistenza asset con ID trasmesso come parametro
         //eccezione in caso di esistenza
         if (AssetExists(ctx, ID)) {
-            String errorMessage = String.format("Asset %s already exists", ID);
+            String errorMessage = String.format("ERROR: Asset %s already exists", ID);
             System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, AssetTransferErrors.ASSET_ALREADY_EXISTS.toString());
+            return errorMessage;
+            //throw new ChaincodeException(errorMessage, AssetTransferErrors.ASSET_ALREADY_EXISTS.toString());
         }
 
         //recupero ID dell'utente che ha invocato lo smart contract
@@ -59,9 +60,10 @@ public final class GaraSmartContract implements ContractInterface {
             ci = new ClientIdentity(stub);
         }
         catch (Exception e) {
-            String errorMessage = "ClientIdentity error";
+            String errorMessage = "ERROR: ClientIdentity error";
             e.printStackTrace();
-            throw new ChaincodeException(errorMessage, AssetTransferErrors.EXCEPTION.toString());
+            return errorMessage;
+            //throw new ChaincodeException(errorMessage, AssetTransferErrors.EXCEPTION.toString());
         }
 
         //evento di creazione della gara
@@ -84,7 +86,7 @@ public final class GaraSmartContract implements ContractInterface {
         stub.putState(ID, asset.toByteArray());
         stub.setEvent("Asset Created", asset.toByteArray());
 
-        return asset.toString();
+        return "OK: asset " + ID + " created";
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
@@ -99,9 +101,10 @@ public final class GaraSmartContract implements ContractInterface {
         //controllo esistenza gara con ID trasmesso come parametro
         //eccezione in caso di non esistenza
         if (!AssetExists(ctx, ID)) {
-            String errorMessage = String.format("Asset %s does not exist", ID);
+            String errorMessage = String.format("ERROR: Asset %s does not exist", ID);
             System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, AssetTransferErrors.ASSET_NOT_FOUND.toString());
+            return errorMessage;
+            //throw new ChaincodeException(errorMessage, AssetTransferErrors.ASSET_NOT_FOUND.toString());
         }
 
         ClientIdentity ci = null;
@@ -110,9 +113,10 @@ public final class GaraSmartContract implements ContractInterface {
             ci = new ClientIdentity(stub);
         }
         catch (Exception e) {
-            String errorMessage = "ClientIdentity error";
+            String errorMessage = "ERROR: ClientIdentity error";
             e.printStackTrace();
-            throw new ChaincodeException(errorMessage, AssetTransferErrors.EXCEPTION.toString());
+            //throw new ChaincodeException(errorMessage, AssetTransferErrors.EXCEPTION.toString());
+            return errorMessage;
         }
 
         try {
@@ -134,13 +138,14 @@ public final class GaraSmartContract implements ContractInterface {
         } catch (Exception e) {
             //il blocco catch deve lanciare un'eccezione quando è necessario
             //far restituire un codice di errore per impedire la generazione della transazione
-            String errorMessage = "Parsing error";
+            String errorMessage = "ERROR: Parsing error";
             System.out.println(errorMessage);
             e.printStackTrace();
-            throw new ChaincodeException(errorMessage, AssetTransferErrors.EXCEPTION.toString());
+            return errorMessage;
+            //throw new ChaincodeException(errorMessage, AssetTransferErrors.EXCEPTION.toString());
         }
         stub.setEvent("Asset Modified", asset.toByteArray());
-        return asset.toString();
+        return "OK: event " + eventID + " added to asset " + ID;
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
@@ -152,20 +157,22 @@ public final class GaraSmartContract implements ContractInterface {
         //controllo esistenza gara con ID trasmesso come parametro
         //eccezione in caso di non esistenza
         if (!AssetExists(ctx, ID)) {
-            String errorMessage = String.format("Asset %s does not exist", ID);
+            String errorMessage = String.format("ERROR: Asset %s does not exist", ID);
             System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage,
-                    AssetTransferErrors.ASSET_NOT_FOUND.toString());
+            //throw new ChaincodeException(errorMessage,
+            //        AssetTransferErrors.ASSET_NOT_FOUND.toString());
+            return errorMessage;
         }
 
         //parsing dell'array di byte in formato ProtocolBuffer nella classe associata
         try {
             asset = Asset.parseFrom(assetByte);
         } catch (Exception e) {
-            String errorMessage = "Parsing error";
+            String errorMessage = "ERROR: Parsing error";
             System.out.println(errorMessage);
             e.printStackTrace();
-            throw new ChaincodeException(errorMessage, AssetTransferErrors.EXCEPTION.toString());
+            return errorMessage;
+            //throw new ChaincodeException(errorMessage, AssetTransferErrors.EXCEPTION.toString());
         }
 
         return asset.toString();

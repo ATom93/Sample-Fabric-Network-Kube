@@ -12,33 +12,22 @@ import reactor.core.publisher.Mono;
 
 public class Client {
 
-    private String dbAddress;
-    private String walletName;
-    private String encryptionPassword;
     private GatewayManager gatewayManager;
-    private String channelName;
     private String chaincodeName = "basic";
     public SmartContract contract;
 
     public Client(
-            String peerAddress, String channelName,
-            String dbAddress, String walletName, String encryptionPassword, String userName
+            String peerAddress, String channelName, /*String chaincodeName,*/
+            String dbAddress, String walletName, String encryptionPassword, String userName/*, String mspId*/
     ) {
         String user = userName;
-        String mspId = "org1";
+        String mspId = "org1";              //organization of the user who invokes the smart contract
         WalletIdentityManager walletIdentityManager = null;
-
-        this.dbAddress = dbAddress;
-        this.walletName = walletName;
-        this.encryptionPassword = encryptionPassword;
-        this.channelName = channelName;
 
         IdentityManager identityManager = new IdentityManager();
 
         try {
-            X509Certificate TLSCert =
-                    //identityManager.getCertificate(peerTLSCertPath);
-                    identityManager.getCertificateFromDatabase(dbAddress);
+            X509Certificate TLSCert = identityManager.getCertificateFromDatabase(dbAddress);
             this.gatewayManager = new GatewayManager(peerAddress, TLSCert);
 
             walletIdentityManager = new WalletIdentityManager(
@@ -61,6 +50,15 @@ public class Client {
     }
 
     /*
+    /**
+     * Invokes the smart contract to create a new asset on the blockchain
+     * registering also the related creation event
+     *
+     * @param event CommonEvent object
+     * @return A Mono with the string returned from the chaincode invocation
+     * @throws ParseException
+     */
+    /*
     public Mono<String> CreateAsset(CommonEvent event) throws ParseException {
 
             String tenantId = event.getTenantId();
@@ -81,11 +79,19 @@ public class Client {
                 );
 
             } else {
-                return Mono.just("Failure");
+                return Mono.just("No asset ID");
             }
 
      }
 
+    /**
+     * Registers the received event on an asset previously registered on the blockchain.
+     *
+     * @param event CommonEvent object
+     * @return A Mono with the string returned from the chaincode invocation
+     * @throws ParseException
+     */
+    /*
      public Mono<String> AddAssetEvent(CommonEvent event) throws ParseException {
 
             String tenantId = event.getTenantId();
@@ -106,7 +112,7 @@ public class Client {
                 );
 
             } else {
-                return Mono.just("Failure");
+                return Mono.just("No asset ID");
             }
 
     }
@@ -130,22 +136,27 @@ public class Client {
                 encryptionPassword,
                 userName);
 
+        String result = "";
+
         switch (chaincodeMethod) {
             case "CreateAsset":
-                client.contract.CreateAsset(
+                result = client.contract.CreateAsset(
                         args[7], args[8], args[9], args[10], args[11]);
+                System.out.println(result);
                 //argomenti: ID_asset, eventID, eventType, eventDate, payload
                 //client.gatewayManager.closeGRPCChannel();
                 break;
             case "AddAssetEvent":
-                client.contract.AddAssetEvent(
+                result = client.contract.AddAssetEvent(
                         args[7], args[8], args[9], args[10], args[11]);
+                System.out.println(result);
                 //argomenti: ID_asset, eventID, eventType, eventDate, payload
                 //client.gatewayManager.closeGRPCChannel();
                 break;
             case "ReadAsset":
-                client.contract.ReadAsset(
+                result = client.contract.ReadAsset(
                         args[7]);
+                System.out.println(result);
                 //argomenti: ID_asset
                 //client.gatewayManager.closeGRPCChannel();
                 break;

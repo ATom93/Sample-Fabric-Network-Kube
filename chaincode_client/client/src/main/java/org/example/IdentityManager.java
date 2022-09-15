@@ -55,14 +55,20 @@ public class IdentityManager {
         return X509Ccertificate;
     }
 
+    /**
+     * Retrieve the certificate of the peer node from
+     * the document with id "peerCert" in the CouchDB database with name "certificates"
+     */
     private String getPeerCertificateFromDatabase(String dbAddress) throws IOException, ParseException {
+        String databaseName = "certificates";
+        String id = "peerCert";
+
         HttpClient httpClient = new StdHttpClient
                 .Builder()
                 .url(dbAddress)
                 .build();
         CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
-        CouchDbConnector db = new StdCouchDbConnector("certificates", dbInstance);
-        String id = "peerCert";
+        CouchDbConnector db = new StdCouchDbConnector(databaseName, dbInstance);
         InputStream doc = db.getAsStream(id);
         String output = IOUtils.toString(doc, StandardCharsets.UTF_8);
         doc.close();

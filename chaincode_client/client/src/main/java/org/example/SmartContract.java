@@ -40,7 +40,7 @@ public class SmartContract implements SmartContractInterface {
      * @param eventType Type of the event
      * @param eventDate Timestamp of the event
      * @param payload Payload of the received event
-     * @return
+     * @return Smart Contract invocation result (begins with "OK" or "ERROR")
      */
     @Override
     public String CreateAsset(
@@ -77,9 +77,9 @@ public class SmartContract implements SmartContractInterface {
      * @param ID Unique identifier of the asset
      * @param eventID Unique identifier of the event
      * @param eventType Type of the event to be registered on the asset
-     * @param eventDate Timestamp of the event
+     * @param eventDate Timestamp of the events
      * @param eventPayload Payload of the received event
-     * @return
+     * @return Smart Contract invocation result (begins with "OK" or "ERROR")
      */
     @Override
     public String AddAssetEvent(
@@ -128,7 +128,7 @@ public class SmartContract implements SmartContractInterface {
             byte[] result = contract.submitTransaction(
                     "ReadAsset", ID
             );
-            System.out.println(new String(result, StandardCharsets.UTF_8));
+            //System.out.println(new String(result, StandardCharsets.UTF_8));
             output = result.toString();
 
         } catch (EndorseException e) {

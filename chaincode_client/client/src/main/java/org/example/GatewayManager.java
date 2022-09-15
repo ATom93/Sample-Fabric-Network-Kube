@@ -47,6 +47,10 @@ public class GatewayManager {
         return gatewayBuilder;
     }
 
+    /**
+     * Close the GRPC channel for connection of the Fabric Gateway component
+     * @throws InterruptedException
+     */
     public void closeGRPCChannel() throws InterruptedException {
         grpcChannel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
     }
