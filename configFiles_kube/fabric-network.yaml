@@ -61,6 +61,10 @@ items:
           port: 30750
           targetPort: 30750
           nodePort: 30750
+        - name: "30850"
+          port: 30850
+          targetPort: 30850
+          nodePort: 30850
       selector:
         io.kompose.service: orderer1-org0-com
     status:
@@ -82,6 +86,10 @@ items:
           port: 30760
           targetPort: 30760
           nodePort: 30760
+        - name: "30860"
+          port: 30860
+          targetPort: 30860
+          nodePort: 30860
       selector:
         io.kompose.service: orderer2-org0-com
     status:
@@ -108,6 +116,10 @@ items:
           port: 30752
           targetPort: 30752
           nodePort: 30752
+        - name: "30851"
+          port: 30851
+          targetPort: 30851
+          nodePort: 30851
       selector:
         io.kompose.service: peer1-org1-com
     status:
@@ -133,6 +145,10 @@ items:
           port: 30757
           targetPort: 30757
           nodePort: 30757
+        - name: "30856"
+          port: 30856
+          targetPort: 30856
+          nodePort: 30856
       selector:
         io.kompose.service: peer1-org2-com
     status:
@@ -404,10 +420,15 @@ items:
                   value: /var/hyperledger/orderer/tls/keystore/server.key
                 - name: ORDERER_GENERAL_TLS_ROOTCAS
                   value: '[/var/hyperledger/orderer/tls/cacerts/cacert-30854.pem]'
+                - name: CORE_OPERATIONS_LISTENADDRESS
+                  value: orderer1-org0-com:30850
+                - name: CORE_METRICS_PROVIDER
+                  value: prometheus
               image: hyperledger/fabric-orderer:2.4.1
               name: orderer1-org0-com
               ports:
                 - containerPort: 30750
+                - containerPort: 30850
               resources: {}
               volumeMounts:
                 - mountPath: /var/hyperledger/orderer/orderer.genesis.block
@@ -491,10 +512,15 @@ items:
                   value: /var/hyperledger/orderer/tls/keystore/server.key
                 - name: ORDERER_GENERAL_TLS_ROOTCAS
                   value: '[/var/hyperledger/orderer/tls/cacerts/cacert-30854.pem]'
+                - name: CORE_OPERATIONS_LISTENADDRESS
+                  value: orderer2-org0-com:30860
+                - name: CORE_METRICS_PROVIDER
+                  value: prometheus
               image: hyperledger/fabric-orderer:2.4.1
               name: orderer2-org0-com
               ports:
                 - containerPort: 30760
+                - containerPort: 30860
               resources: {}
               volumeMounts:
                 - mountPath: /var/hyperledger/orderer/orderer.genesis.block
@@ -599,11 +625,16 @@ items:
                   value: DEBUG
                 - name: CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG
                   value: "{\"peername\":\"org1-peer1\"}"
+                - name: CORE_OPERATIONS_LISTENADDRESS
+                  value: peer1-org1-com:30851
+                - name: CORE_METRICS_PROVIDER
+                  value: prometheus
               image: hyperledger/fabric-peer:2.4.1
               name: peer1-org1-com
               ports:
                 - containerPort: 30751
                 - containerPort: 30752
+                - containerPort: 30851
               resources: {}
               volumeMounts:
                 - mountPath: /host/var/run/
@@ -717,11 +748,16 @@ items:
                   value: DEBUG
                 - name: CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG
                   value: "{\"peername\":\"org2-peer1\"}"
+                - name: CORE_OPERATIONS_LISTENADDRESS
+                  value: peer1-org2-com:30856
+                - name: CORE_METRICS_PROVIDER
+                  value: prometheus
               image: hyperledger/fabric-peer:2.4.1
               name: peer1-org2-com
               ports:
                 - containerPort: 30756
                 - containerPort: 30757
+                - containerPort: 30856
               resources: {}
               volumeMounts:
                 - mountPath: /host/var/run/
