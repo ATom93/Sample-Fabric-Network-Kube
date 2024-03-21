@@ -92,7 +92,7 @@ public class SmartContract implements SmartContractInterface {
 
             System.out.println("\nsubmitting 'AddAssetEvent' Transaction...");
             byte[] result = contract.submitTransaction(
-                    "AddAssetEvent", ID, eventID, eventType, eventDate
+                    "AddAssetEvent", ID, eventID, eventType, eventDate, eventPayload
             );
             output = new String(result, StandardCharsets.UTF_8);
 
